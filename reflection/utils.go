@@ -92,24 +92,6 @@ func GetCallingFuncName() string {
 	return functionName + "()"
 }
 
-// GetThisFuncName -
-func GetThisFuncName() string {
-	return GetFuncName(0)
-}
-
-// GetFuncName -
-func GetFuncName(skip int) string {
-	pc, _, _, _ := runtime.Caller(skip)
-	var functionName = runtime.FuncForPC(pc).Name()
-
-	functionName = strings.Replace(functionName, strToReplace, strToReplaceWith, 1)
-	functionName = strings.Replace(functionName, "(", "", 1)
-	functionName = strings.Replace(functionName, ")", "", 1)
-	functionName = strings.Replace(functionName, "*", "", 1)
-
-	return functionName + "()"
-}
-
 // GetCallStackWithFileAndLineNumber - traces a call with line number
 func GetCallStackWithFileAndLineNumber() string {
 	pc := make([]uintptr, 15)
@@ -152,4 +134,23 @@ func Trace() {
 	frames := runtime.CallersFrames(pc[:n])
 	frame, _ := frames.Next()
 	fmt.Printf("%s,:%d %s\n", frame.File, frame.Line, frame.Function)
+}
+
+// Done
+
+func getFuncName(skip int) string {
+	pc, _, _, _ := runtime.Caller(skip)
+	var functionName = runtime.FuncForPC(pc).Name()
+
+	functionName = strings.Replace(functionName, strToReplace, strToReplaceWith, 1)
+	functionName = strings.Replace(functionName, "(", "", 1)
+	functionName = strings.Replace(functionName, ")", "", 1)
+	functionName = strings.Replace(functionName, "*", "", 1)
+
+	return functionName + "()"
+}
+
+// GetThisFuncName -
+func GetThisFuncName() string {
+	return getFuncName(2)
 }
