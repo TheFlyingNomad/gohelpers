@@ -92,6 +92,11 @@ func GetCallingFuncName() string {
 	return functionName + "()"
 }
 
+// GetThisFuncName -
+func GetThisFuncName() string {
+	return GetFuncName(0)
+}
+
 // GetFuncName -
 func GetFuncName(skip int) string {
 	pc, _, _, _ := runtime.Caller(skip)
