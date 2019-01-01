@@ -1,4 +1,4 @@
-package collections
+package types
 
 func isInDictionary(theDictionary map[byte]string) bool {
 	return true

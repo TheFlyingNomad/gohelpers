@@ -1,9 +1,10 @@
-package collections
+package types
 
 import (
 	"container/heap"
 )
 
+// PriorityQueue -
 type PriorityQueue []*Item
 
 // An Item is something we manage in a priority queue.
@@ -28,6 +29,7 @@ func (pq PriorityQueue) Swap(i, j int) {
 	pq[j].Index = j
 }
 
+// Push -
 func (pq *PriorityQueue) Push(x interface{}) {
 	n := len(*pq)
 	item := x.(*Item)
@@ -35,6 +37,7 @@ func (pq *PriorityQueue) Push(x interface{}) {
 	*pq = append(*pq, item)
 }
 
+// Pop -
 func (pq *PriorityQueue) Pop() interface{} {
 	old := *pq
 	n := len(old)
@@ -44,18 +47,19 @@ func (pq *PriorityQueue) Pop() interface{} {
 	return item
 }
 
-// update modifies the priority and value of an Item in the queue.
+// Update - update modifies the priority and value of an Item in the queue.
 func (pq *PriorityQueue) Update(item *Item, value *interface{}, priority int64) {
 	item.Data = value
 	item.Priority = priority
 	heap.Fix(pq, item.Index)
 }
 
+// Dump -
 func (pq *PriorityQueue) Dump() []*Item {
 	return *pq
 }
 
-// - Get the top Priority to support making decision on priority from calling code
+// Peek - Get the top Priority to support making decision on priority from calling code
 func (pq PriorityQueue) Peek() int64 {
 	length := pq.Len()
 	if length > 0 {
