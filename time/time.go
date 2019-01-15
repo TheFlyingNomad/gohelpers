@@ -9,10 +9,10 @@ func ToNanoSeconds(t time.Time) int64 {
 
 // ToMicroSeconds -
 func ToMicroSeconds(t time.Time) int64 {
-	return t.UnixNano() / int64(time.Microsecond)
+	return t.UTC().UnixNano() / int64(time.Microsecond)
 }
 
 // ToMilliSeconds -
 func ToMilliSeconds(t time.Time) int64 {
-	return t.UnixNano() / int64(time.Millisecond)
+	return t.UTC().UnixNano() / int64(time.Millisecond)
 }

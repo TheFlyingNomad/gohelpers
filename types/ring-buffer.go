@@ -27,7 +27,4 @@ func (thisRef RingBuffer) run() {
 			thisRef.Data <- v
 		}
 	}
-
-	// close(thisRef.in)
-	// close(thisRef.Data)
 }
