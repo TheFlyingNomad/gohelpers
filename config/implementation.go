@@ -42,11 +42,6 @@ func LoadConfig(config Config) Config {
 				}
 			}
 		}
-
-		golog.Instance().LogInfoWithFields(gologC.Fields{
-			"method":  reflectionHelpers.GetThisFuncName(),
-			"message": fmt.Sprintf("Configuration: %s", configInstance.String()),
-		})
 	})
 
 	return configInstance
