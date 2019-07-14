@@ -3,6 +3,7 @@ package numbers
 import (
 	"errors"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -43,4 +44,14 @@ func ReadNumericFromInterface(data interface{}) (int, error) {
 	}
 
 	return value, nil
+}
+
+// ParseFloat -
+func ParseFloat(toParse string, defaultValue float64) float64 {
+	parsedVal, err := strconv.ParseFloat(toParse, 64)
+	if err != nil {
+		return defaultValue
+	}
+
+	return parsedVal
 }
