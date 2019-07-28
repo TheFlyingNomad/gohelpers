@@ -5,6 +5,7 @@ import (
 	"path"
 	"reflect"
 	"runtime"
+	"runtime/debug"
 	"strings"
 )
 
@@ -153,4 +154,71 @@ func getFuncName(skip int) string {
 // GetThisFuncName -
 func GetThisFuncName() string {
 	return getFuncName(2)
+}
+
+// GetStackTrace -
+func GetStackTrace2(prefixToRemove string) string {
+
+	pc := make([]uintptr, 15)
+	n := runtime.Callers(2, pc)
+	frames := runtime.CallersFrames(pc[:n])
+
+	var stack = ""
+
+	frame, more := frames.Next()
+	for more {
+		// stack += newLineSeparator
+		funcName := strings.ReplaceAll(frame.Function, prefixToRemove, "")
+		stack += funcName + "()/" + stack
+
+		frame, more = frames.Next()
+	}
+
+	if len(stack) > 0 {
+		stack = stack[0 : len(stack)-1]
+	}
+
+	return stack
+}
+
+// GetStackTrace -
+func GetStackTrace(prefixesToRemove []string) string {
+	// debug.PrintStack()
+
+	prefixesToRemove = append(prefixesToRemove, "created by ")
+
+	stackTrace := debug.Stack()
+	lines := strings.Split(string(stackTrace), "\n")
+
+	stack := ""
+	for _, funcName := range lines {
+		if strings.Index(funcName, "goroutine") != -1 ||
+			strings.Index(funcName, "runtime/debug") != -1 ||
+			strings.Index(funcName, ".go:") != -1 ||
+			strings.Index(funcName, "GetStackTrace") != -1 ||
+			len(strings.TrimSpace(funcName)) <= 0 {
+			continue
+		}
+
+		for _, prefixeToRemove := range prefixesToRemove {
+			funcName = strings.Replace(funcName, prefixeToRemove, "", -1)
+		}
+
+		if strings.Index(funcName, "(") != -1 {
+			startIndex := strings.Index(funcName, "(") + 1
+			endIndex := strings.Index(funcName, ")")
+			stringToRemove := funcName[startIndex:endIndex]
+			funcName = strings.ReplaceAll(funcName, stringToRemove, "")
+		} else {
+			funcName += "()"
+		}
+
+		stack = funcName + " / " + stack
+	}
+
+	if len(stack) > 0 {
+		stack = stack[0 : len(stack)-len(" / ")]
+	}
+
+	return stack
 }
