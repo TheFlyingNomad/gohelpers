@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path"
 	"reflect"
+	"regexp"
 	"runtime"
 	"runtime/debug"
 	"strings"
@@ -186,6 +187,7 @@ func GetStackTrace(prefixesToRemove []string) string {
 	// debug.PrintStack()
 
 	prefixesToRemove = append(prefixesToRemove, "created by ")
+	prefixesToRemove = append(prefixesToRemove, ".()")
 
 	stackTrace := debug.Stack()
 	lines := strings.Split(string(stackTrace), "\n")
@@ -200,24 +202,30 @@ func GetStackTrace(prefixesToRemove []string) string {
 			continue
 		}
 
+		regExp := regexp.MustCompile(`\((.*?)\)`)
+		regExpResult := regExp.FindAllStringSubmatch(funcName, -1)
+		for _, arr := range regExpResult {
+			if len(arr) > 1 {
+				toRemove := arr[1]
+				if strings.Index(toRemove, "0x") != -1 {
+					funcName = strings.Replace(funcName, toRemove, "", -1)
+				}
+			}
+		}
+
 		for _, prefixeToRemove := range prefixesToRemove {
 			funcName = strings.Replace(funcName, prefixeToRemove, "", -1)
 		}
 
-		if strings.Index(funcName, "(") != -1 {
-			startIndex := strings.Index(funcName, "(") + 1
-			endIndex := strings.Index(funcName, ")")
-			stringToRemove := funcName[startIndex:endIndex]
-			funcName = strings.ReplaceAll(funcName, stringToRemove, "")
-		} else {
+		if strings.Index(funcName, "(") == -1 {
 			funcName += "()"
 		}
 
-		stack = funcName + " / " + stack
-	}
-
-	if len(stack) > 0 {
-		stack = stack[0 : len(stack)-len(" / ")]
+		if len(stack) > 0 {
+			stack = stack + " | " + funcName
+		} else {
+			stack = funcName
+		}
 	}
 
 	return stack
